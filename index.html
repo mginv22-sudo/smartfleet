@@ -1803,20 +1803,29 @@
                             <option value="down">Out of Service</option>
                         </select>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>POH (Periodic Overhaul) Contract? *</label>
-                            <select id="pohContract" required onchange="toggleLubeOilField()">
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="lubeOilFieldContainer" style="display: none;">
-                            <label>Lube Oil Included in POH?</label>
-                            <select id="lubeOilInPOH">
-                                <option value="no">No</option>
-                                <option value="yes">Yes</option>
-                            </select>
+                    <div class="form-group">
+                        <label>Service Contract? *</label>
+                        <select id="serviceContract" required onchange="toggleContractFields()">
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+                    <div id="contractFieldsContainer" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Contract Billing Type</label>
+                                <select id="contractBillingType">
+                                    <option value="poh">POH (Per Operating Hour)</option>
+                                    <option value="schedule">Schedule Based</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Lube Oil Included in Contract?</label>
+                                <select id="lubeOilIncluded">
+                                    <option value="no">No</option>
+                                    <option value="yes">Yes</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -2152,15 +2161,16 @@
         }
 
         // Toggle Lube Oil field based on POH selection
-        function toggleLubeOilField() {
-            const pohContract = document.getElementById('pohContract').value;
-            const lubeOilContainer = document.getElementById('lubeOilFieldContainer');
+        function toggleContractFields() {
+            const serviceContract = document.getElementById('serviceContract').value;
+            const contractFieldsContainer = document.getElementById('contractFieldsContainer');
             
-            if (pohContract === 'yes') {
-                lubeOilContainer.style.display = 'block';
+            if (serviceContract === 'yes') {
+                contractFieldsContainer.style.display = 'block';
             } else {
-                lubeOilContainer.style.display = 'none';
-                document.getElementById('lubeOilInPOH').value = 'no';
+                contractFieldsContainer.style.display = 'none';
+                document.getElementById('contractBillingType').value = 'poh';
+                document.getElementById('lubeOilIncluded').value = 'no';
             }
         }
 
@@ -2225,27 +2235,38 @@
         function checkServiceAlerts() {
             if (!engines || engines.length === 0) return;
             
-            console.log('🔍 Checking service alerts for POH engines...');
+            console.log('🔍 Checking service alerts for contract engines...');
             
             engines.forEach(engine => {
-                // Only check engines with POH contract
-                if (engine.pohContract !== 'yes') return;
+                // Check if engine has service contract (new or legacy field)
+                const hasContract = engine.serviceContract === 'yes' || engine.pohContract === 'yes';
+                if (!hasContract) return;
                 
-                const hoursSinceService = engine.operatingHours - engine.lastServiceHours;
-                const hoursUntilOil = engine.oilInterval - hoursSinceService;
+                // Get billing type (default to 'poh' for legacy data)
+                const billingType = engine.contractBillingType || 'poh';
                 
-                // Check if within 300 hours of service
-                if (hoursUntilOil <= 300 && hoursUntilOil > 0) {
-                    if (engine.lubeOilInPOH === 'yes') {
-                        // Send alert for lube oil change
-                        console.log(`⚠️ Engine ${engine.id} needs lube oil service in ${hoursUntilOil} hours`);
-                        sendServiceAlert(engine, hoursUntilOil, 'Lube Oil Change');
-                    } else {
-                        // Send alert for other service
-                        console.log(`⚠️ Engine ${engine.id} needs service in ${hoursUntilOil} hours`);
-                        sendServiceAlert(engine, hoursUntilOil, 'Periodic Service');
+                // Only send hour-based alerts for POH (Per Operating Hour) contracts
+                if (billingType === 'poh') {
+                    const hoursSinceService = engine.operatingHours - engine.lastServiceHours;
+                    const hoursUntilOil = engine.oilInterval - hoursSinceService;
+                    
+                    // Check if within 300 hours of service
+                    if (hoursUntilOil <= 300 && hoursUntilOil > 0) {
+                        // Check if lube oil is included (new or legacy field)
+                        const lubeOilIncluded = engine.lubeOilIncluded === 'yes' || engine.lubeOilInPOH === 'yes';
+                        
+                        if (lubeOilIncluded) {
+                            // Send alert for lube oil change
+                            console.log(`⚠️ Engine ${engine.id} needs lube oil service in ${hoursUntilOil} hours`);
+                            sendServiceAlert(engine, hoursUntilOil, 'Lube Oil Change');
+                        } else {
+                            // Send alert for other service
+                            console.log(`⚠️ Engine ${engine.id} needs service in ${hoursUntilOil} hours`);
+                            sendServiceAlert(engine, hoursUntilOil, 'Periodic Service');
+                        }
                     }
                 }
+                // For schedule-based contracts, alerts would be calendar-based (not implemented yet)
             });
         }
         
@@ -2783,8 +2804,9 @@
                 majorInterval: parseInt(document.getElementById('majorInterval').value) || 2000,
                 lastServiceHours: parseInt(document.getElementById('lastServiceHours').value) || 0,
                 status: document.getElementById('status').value,
-                pohContract: document.getElementById('pohContract').value,
-                lubeOilInPOH: document.getElementById('lubeOilInPOH').value,
+                serviceContract: document.getElementById('serviceContract').value,
+                contractBillingType: document.getElementById('contractBillingType').value,
+                lubeOilIncluded: document.getElementById('lubeOilIncluded').value,
                 notes: document.getElementById('notes').value || ''
             };
 
@@ -2887,12 +2909,13 @@
             document.getElementById('majorInterval').value = engine.majorInterval;
             document.getElementById('lastServiceHours').value = engine.lastServiceHours;
             document.getElementById('status').value = engine.status;
-            document.getElementById('pohContract').value = engine.pohContract || 'no';
-            document.getElementById('lubeOilInPOH').value = engine.lubeOilInPOH || 'no';
+            document.getElementById('serviceContract').value = engine.serviceContract || engine.pohContract || 'no';
+            document.getElementById('contractBillingType').value = engine.contractBillingType || 'poh';
+            document.getElementById('lubeOilIncluded').value = engine.lubeOilIncluded || engine.lubeOilInPOH || 'no';
             document.getElementById('notes').value = engine.notes || '';
             
-            // Trigger POH field visibility
-            toggleLubeOilField();
+            // Trigger contract field visibility
+            toggleContractFields();
 
             console.log('All fields populated successfully');
             console.log('=== editEngine complete ===');
@@ -3305,19 +3328,27 @@
                         </div>
                     </div>
                     <div class="metric-row">
-                        <div class="metric-label">POH Contract:</div>
+                        <div class="metric-label">Service Contract:</div>
                         <div class="metric-value">
-                            <span style="padding: 4px 12px; border-radius: 12px; font-weight: 600; ${engine.pohContract === 'yes' ? 'background: #dcfce7; color: #166534;' : 'background: #fee2e2; color: #991b1b;'}">
-                                ${engine.pohContract === 'yes' ? '✓ YES' : '✗ NO'}
+                            <span style="padding: 4px 12px; border-radius: 12px; font-weight: 600; ${(engine.serviceContract === 'yes' || engine.pohContract === 'yes') ? 'background: #dcfce7; color: #166534;' : 'background: #fee2e2; color: #991b1b;'}">
+                                ${(engine.serviceContract === 'yes' || engine.pohContract === 'yes') ? '✓ YES' : '✗ NO'}
                             </span>
                         </div>
                     </div>
-                    ${engine.pohContract === 'yes' ? `
+                    ${(engine.serviceContract === 'yes' || engine.pohContract === 'yes') ? `
                     <div class="metric-row">
-                        <div class="metric-label">Lube Oil in POH:</div>
+                        <div class="metric-label">Contract Billing Type:</div>
                         <div class="metric-value">
-                            <span style="padding: 4px 12px; border-radius: 12px; font-weight: 600; ${engine.lubeOilInPOH === 'yes' ? 'background: #dbeafe; color: #1e40af;' : 'background: #fef3c7; color: #92400e;'}">
-                                ${engine.lubeOilInPOH === 'yes' ? '✓ Included' : '✗ Not Included'}
+                            <span style="padding: 4px 12px; border-radius: 12px; font-weight: 600; ${(engine.contractBillingType === 'poh' || !engine.contractBillingType) ? 'background: #dbeafe; color: #1e40af;' : 'background: #fef3c7; color: #92400e;'}">
+                                ${(engine.contractBillingType === 'poh' || !engine.contractBillingType) ? '⏱️ POH (Per Operating Hour)' : '📅 Schedule Based'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-label">Lube Oil Included:</div>
+                        <div class="metric-value">
+                            <span style="padding: 4px 12px; border-radius: 12px; font-weight: 600; ${(engine.lubeOilIncluded === 'yes' || engine.lubeOilInPOH === 'yes') ? 'background: #dcfce7; color: #166534;' : 'background: #fee2e2; color: #991b1b;'}">
+                                ${(engine.lubeOilIncluded === 'yes' || engine.lubeOilInPOH === 'yes') ? '✓ YES' : '✗ NO'}
                             </span>
                         </div>
                     </div>
@@ -4445,8 +4476,9 @@
                 'Service Interval Hours': e.majorInterval,
                 'Last Service Hours': e.lastServiceHours,
                 'Status': e.status,
-                'POH Contract': e.pohContract || 'no',
-                'Lube Oil in POH': e.lubeOilInPOH || 'no',
+                'Service Contract': e.serviceContract || e.pohContract || 'no',
+                'Contract Billing Type': e.contractBillingType || 'poh',
+                'Lube Oil Included': e.lubeOilIncluded || e.lubeOilInPOH || 'no',
                 'Notes': e.notes
             }));
             const ws1 = XLSX.utils.json_to_sheet(enginesData);
@@ -4509,8 +4541,9 @@
                     'Service Interval Hours': 2000,
                     'Last Service Hours': 1000,
                     'Status': 'operational',
-                    'POH Contract': 'yes',
-                    'Lube Oil in POH': 'yes',
+                    'Service Contract': 'yes',
+                    'Contract Billing Type': 'poh',
+                    'Lube Oil Included': 'yes',
                     'Notes': 'Example engine - replace with your data'
                 },
                 {
@@ -4529,8 +4562,9 @@
                     'Service Interval Hours': 2000,
                     'Last Service Hours': 4800,
                     'Status': 'operational',
-                    'POH Contract': 'no',
-                    'Lube Oil in POH': 'no',
+                    'Service Contract': 'yes',
+                    'Contract Billing Type': 'schedule',
+                    'Lube Oil Included': 'no',
                     'Notes': 'CHP system for biogas plant'
                 }
             ];
@@ -4640,8 +4674,12 @@
                         majorInterval: parseInt(row['Service Interval Hours'] || row['Major Service Interval (hours)'] || row['Major Interval'] || row['Major Service Interval'] || row['majorInterval'] || 2000),
                         lastServiceHours: parseInt(row['Last Service Hours'] || row['lastServiceHours'] || 0),
                         status: (row['Status'] || row['St'] || row['status'] || 'operational').toLowerCase(),
-                        pohContract: (row['POH Contract'] || row['pohContract'] || 'no').toLowerCase(),
-                        lubeOilInPOH: (row['Lube Oil in POH'] || row['lubeOilInPOH'] || 'no').toLowerCase(),
+                        serviceContract: (row['Service Contract'] || row['POH Contract'] || row['pohContract'] || row['serviceContract'] || 'no').toLowerCase(),
+                        contractBillingType: (row['Contract Billing Type'] || row['contractBillingType'] || 'poh').toLowerCase(),
+                        lubeOilIncluded: (row['Lube Oil Included'] || row['Lube Oil in POH'] || row['lubeOilInPOH'] || row['lubeOilIncluded'] || 'no').toLowerCase(),
+                        // Legacy fields for backward compatibility
+                        pohContract: (row['Service Contract'] || row['POH Contract'] || row['pohContract'] || 'no').toLowerCase(),
+                        lubeOilInPOH: (row['Lube Oil Included'] || row['Lube Oil in POH'] || row['lubeOilInPOH'] || 'no').toLowerCase(),
                         notes: row['Notes'] || row['notes'] || '',
                         lastHoursUpdate: new Date().toISOString()
                     };
