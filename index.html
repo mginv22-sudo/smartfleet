@@ -13,8 +13,9 @@
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU21hcnRGbGVldCAtIEdQSSBFTkVSR1kiLCJzaG9ydF9uYW1lIjoiU21hcnRGbGVldCIsImRlc2NyaXB0aW9uIjoiR2FzIEVuZ2luZSBGbGVldCBNYW5hZ2VtZW50IFN5c3RlbSIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWUzYThhIiwidGhlbWVfY29sb3IiOiIjMWUzYThhIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCclM0UlM0NkZWZzJTNFJTNDbGluZWFyR3JhZGllbnQgaWQ9J2dyYWQnIHgxPScwJTI1JyB5MT0nMCUyNScgeDI9JzEwMCUyNScgeTI9JzEwMCUyNSclM0UlM0NzdG9wIG9mZnNldD0nMCUyNScgc3R5bGU9J3N0b3AtY29sb3I6JTIzM2I4MmY2O3N0b3Atb3BhY2l0eToxJyAlMkYlM0UlM0NzdG9wIG9mZnNldD0nMTAwJTI1JyBzdHlsZT0nc3RvcC1jb2xvcjolMjMwNmI2ZDQ7c3RvcC1vcGFjaXR5OjEnICUyRiUzRSUzQyUyRmxpbmVhckdyYWRpZW50JTNFJTNDJTJGZGVmcyUzRSUzQ3JlY3Qgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnIHJ4PScyMCcgZmlsbD0ndXJsKCUyM2dyYWQpJyUyRiUzRSUzQ3BhdGggZD0nTTUwIDIwIEw3MCAzNSBMNzAgNjUgTDUwIDgwIEwzMCA2NSBMMzAgMzUgWicgZmlsbD0nd2hpdGUnIHN0cm9rZT0nJTIzZjU5ZTBiJyBzdHJva2Utd2lkdGg9JzMnJTJGJTNFJTNDY2lyY2xlIGN4PSc1MCcgY3k9JzUwJyByPSc4JyBmaWxsPSclMjNmNTllMGInJTJGJTNFJTNDcGF0aCBkPSdNNTAgMzAgTDUwIDQyIE01MCA1OCBMNTAgNzAgTTM1IDUwIEw0MiA1MCBNNTggNTAgTDY1IDUwJyBzdHJva2U9JyUyM2Y1OWUwYicgc3Ryb2tlLXdpZHRoPSczJyBzdHJva2UtbGluZWNhcD0ncm91bmQnJTJGJTNFJTNDJTJGc3ZnJTNFIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjUxMng1MTIifV19">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%233b82f6;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2306b6d4;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Cpath d='M50 20 L70 35 L70 65 L50 80 L30 65 L30 35 Z' fill='white' stroke='%23f59e0b' stroke-width='3'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23f59e0b'/%3E%3Cpath d='M50 30 L50 42 M50 58 L50 70 M35 50 L42 50 M58 50 L65 50' stroke='%23f59e0b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK with Authentication -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
         * {
@@ -1350,12 +1351,12 @@
                 <p>GPI ENERGY (THAILAND)</p>
             </div>
             
-            <div class="login-error" id="loginError">Invalid username or password</div>
+            <div class="login-error" id="loginError">Invalid email or password</div>
             
             <form class="login-form" id="loginForm" onsubmit="return handleLogin(event)">
                 <div class="login-form-group">
-                    <label>Username</label>
-                    <input type="text" id="loginUsername" required autocomplete="username" placeholder="Enter your username">
+                    <label>Email Address</label>
+                    <input type="email" id="loginUsername" required autocomplete="username" placeholder="your.email@gpienergy.net">
                 </div>
                 <div class="login-form-group">
                     <label>Password</label>
@@ -1365,7 +1366,7 @@
             </form>
             
             <div class="login-footer">
-                © 2025 GPI ENERGY (THAILAND) - All rights reserved
+                🔒 Secure Login • Version SECURE_V1.0
             </div>
         </div>
     </div>
@@ -1999,7 +2000,42 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const database = firebase.database();
+        
+        // ===================================
+        // GLOBAL VARIABLES - MUST BE FIRST
+        // ===================================
+        
+        // User state
+        let currentUser = null;
+        let userRole = null;
+        let userEmail = null;
+        let userName = null;
+        let userUID = null;
+        
+        // Data arrays
+        let engines = [];
+        let spares = [];
+        let lubeCosts = [];
+        
+        // Session management
+        let sessionTimeout = null;
+        let sessionWarningTimeout = null;
+        const SESSION_DURATION = 30 * 60 * 1000; // 30 minutes
+        const SESSION_WARNING_TIME = 25 * 60 * 1000; // 25 minutes
+        
+        // Rate limiting
+        let loginAttempts = {};
+        const MAX_LOGIN_ATTEMPTS = 5;
+        const LOCKOUT_DURATION = 30 * 60 * 1000; // 30 minutes
+        
+        // Temporary passwords
+        const TEMPORARY_PASSWORDS = [
+            'TempAdmin#2026!GPI',
+            'TempManager#2026!GPI',
+            'TempEngineer#2026!GPI'
+        ];
         
         // Database references for real-time sync
         const enginesRef = database.ref('engines');
@@ -2091,32 +2127,112 @@
             });
         }
         
-        // Authentication System
-        const users = {
-            'manager': { 
-                password: 'GPIManager2025', 
-                name: 'Service Manager', 
-                role: 'manager',
-                permissions: ['all']
-            },
-            'admin': { 
-                password: 'GPIAdmin2025', 
-                name: 'System Administrator', 
-                role: 'admin',
-                permissions: ['all']
-            },
-            'engineer': { 
-                password: 'GPIEngineer2025', 
-                name: 'Field Engineer', 
-                role: 'engineer',
-                permissions: ['dashboard', 'fleet', 'planning', 'spares', 'forecasting']
+        // ===================================
+        // FIREBASE AUTHENTICATION
+        // ===================================
+        
+        // ===================================
+        // AUTHENTICATION HELPER FUNCTIONS
+        // ===================================
+        
+        function checkRateLimit(email) {
+            const now = Date.now();
+            if (!loginAttempts[email]) {
+                loginAttempts[email] = { count: 0, lockoutUntil: null };
             }
-        };
-
-        let engines = [];
-        let spares = [];
-        let lubeCosts = [];
-        let currentUser = null;
+            const attempts = loginAttempts[email];
+            if (attempts.lockoutUntil && now < attempts.lockoutUntil) {
+                const remainingMinutes = Math.ceil((attempts.lockoutUntil - now) / 60000);
+                throw new Error(`Account locked. Try again in ${remainingMinutes} minutes.`);
+            }
+            if (attempts.lockoutUntil && now >= attempts.lockoutUntil) {
+                attempts.count = 0;
+                attempts.lockoutUntil = null;
+            }
+            return true;
+        }
+        
+        function recordFailedAttempt(email) {
+            if (!loginAttempts[email]) {
+                loginAttempts[email] = { count: 0, lockoutUntil: null };
+            }
+            loginAttempts[email].count++;
+            if (loginAttempts[email].count >= MAX_LOGIN_ATTEMPTS) {
+                loginAttempts[email].lockoutUntil = Date.now() + LOCKOUT_DURATION;
+                logAuditEvent('ACCOUNT_LOCKED', { email: email, attempts: MAX_LOGIN_ATTEMPTS });
+                throw new Error(`Too many failed attempts. Account locked for 30 minutes.`);
+            }
+        }
+        
+        function resetLoginAttempts(email) {
+            if (loginAttempts[email]) {
+                loginAttempts[email] = { count: 0, lockoutUntil: null };
+            }
+        }
+        
+        // Session timeout management
+        function startSessionTimeout() {
+            if (sessionTimeout) clearTimeout(sessionTimeout);
+            if (sessionWarningTimeout) clearTimeout(sessionWarningTimeout);
+            
+            sessionWarningTimeout = setTimeout(() => {
+                if (confirm('⚠️ Your session will expire in 5 minutes due to inactivity. Click OK to stay logged in.')) {
+                    startSessionTimeout();
+                    logAuditEvent('SESSION_EXTENDED');
+                }
+            }, SESSION_WARNING_TIME);
+            
+            sessionTimeout = setTimeout(() => {
+                alert('Session expired due to inactivity. Please login again.');
+                logout(true);
+            }, SESSION_DURATION);
+        }
+        
+        function resetSessionTimeout() {
+            if (currentUser) {
+                startSessionTimeout();
+            }
+        }
+        
+        // Add activity listeners
+        ['mousedown', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+            document.addEventListener(event, resetSessionTimeout);
+        });
+        
+        // Audit logging
+        function logAuditEvent(action, details = {}) {
+            if (!currentUser) return;
+            const auditLog = {
+                timestamp: Date.now(),
+                userId: userUID,
+                userEmail: userEmail,
+                userName: userName,
+                userRole: userRole,
+                action: action,
+                details: details
+            };
+            database.ref('auditLogs').push(auditLog).catch(console.error);
+        }
+        
+        // Check user permissions
+        function hasPermission(permission) {
+            if (!userRole) return false;
+            if (userRole === 'admin' || userRole === 'manager') return true;
+            if (userRole === 'engineer') {
+                // Engineer can only: update hours, add remarks, register engines
+                const allowedActions = ['view', 'updateHours', 'addRemarks', 'registerEngine'];
+                return allowedActions.includes(permission);
+            }
+            return false;
+        }
+        
+        function isEngineer() {
+            return userRole === 'engineer';
+        }
+        
+        function isAdminOrManager() {
+            return userRole === 'admin' || userRole === 'manager';
+        }
 
         // Genset Models by Manufacturer
         const gensetModels = {
@@ -2305,50 +2421,111 @@
             setTimeout(checkServiceAlerts, 5000); // Check 5 seconds after data loads
         }
 
-        // Check if user is logged in on page load
-        window.addEventListener('load', function() {
-            const loggedInUser = sessionStorage.getItem('loggedInUser');
-            if (loggedInUser) {
-                currentUser = JSON.parse(loggedInUser);
+
+        // Check if user is logged in - Firebase Auth State
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                userUID = user.uid;
+                userEmail = user.email;
                 
-                // Fallback: if permissions missing, reload from users object
-                if (!currentUser.permissions && users[currentUser.username]) {
-                    currentUser.permissions = users[currentUser.username].permissions;
-                    sessionStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                // Get user data from database
+                const userSnapshot = await database.ref(`users/${user.uid}`).once('value');
+                const userData = userSnapshot.val();
+                
+                if (userData) {
+                    userRole = userData.role;
+                    userName = userData.name;
+                    
+                    startSessionTimeout();
+                    showMainApp();
+                    loadData();
+                    logAuditEvent('USER_LOGIN');
+                } else {
+                    console.error('User data not found');
+                    alert('User data not found. Contact administrator.');
+                    auth.signOut();
                 }
-                
-                showMainApp();
-                loadData();
             } else {
                 showLoginPage();
             }
         });
 
-        function handleLogin(event) {
+        async function handleLogin(event) {
             event.preventDefault();
             
-            const username = document.getElementById('loginUsername').value;
+            const email = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
             const errorDiv = document.getElementById('loginError');
+            const loginBtn = event.target.querySelector('button[type="submit"]');
             
-            if (users[username] && users[username].password === password) {
-                currentUser = {
-                    username: username,
-                    name: users[username].name,
-                    role: users[username].role,
-                    permissions: users[username].permissions
-                };
+            try {
+                checkRateLimit(email);
                 
-                sessionStorage.setItem('loggedInUser', JSON.stringify(currentUser));
-                
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Signing in...';
                 errorDiv.classList.remove('show');
+                
+                // Sign in with Firebase
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                userUID = currentUser.uid;
+                userEmail = email;
+                
+                // Get user data
+                const userSnapshot = await database.ref(`users/${currentUser.uid}`).once('value');
+                const userData = userSnapshot.val();
+                
+                if (!userData) {
+                    throw new Error('User data not found. Contact administrator.');
+                }
+                
+                userRole = userData.role;
+                userName = userData.name;
+                
+                // Reset failed attempts
+                resetLoginAttempts(email);
+                
+                // Check if temporary password - not needed as Firebase Auth handles this
+                
+                // Log successful login
+                logAuditEvent('USER_LOGIN', { success: true });
+                
+                // Start session
+                startSessionTimeout();
+                
+                // Show app
                 showMainApp();
                 loadData();
-            } else {
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                let errorMessage = 'Login failed. Please check your credentials.';
+                
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    try {
+                        recordFailedAttempt(email);
+                        errorMessage = 'Invalid email or password.';
+                    } catch (lockoutError) {
+                        errorMessage = lockoutError.message;
+                    }
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many failed attempts. Account temporarily locked.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                errorDiv.textContent = errorMessage;
                 errorDiv.classList.add('show');
+                logAuditEvent('USER_LOGIN', { success: false, error: errorMessage });
+                
                 setTimeout(() => {
                     errorDiv.classList.remove('show');
-                }, 3000);
+                }, 5000);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
             }
             
             return false;
@@ -2364,20 +2541,15 @@
             document.getElementById('mainApp').style.display = 'block';
             
             // Update user info in header
-            document.getElementById('currentUserName').textContent = currentUser.name;
-            document.getElementById('currentUserRole').textContent = currentUser.role.toUpperCase();
-            document.getElementById('userAvatar').textContent = currentUser.name.split(' ').map(n => n[0]).join('');
+            document.getElementById('currentUserName').textContent = userName;
+            document.getElementById('currentUserRole').textContent = userRole.toUpperCase();
+            document.getElementById('userAvatar').textContent = userName.split(' ').map(n => n[0]).join('');
             
             // Apply permission-based tab visibility
             applyPermissions();
         }
 
         function applyPermissions() {
-            const hasPermission = (tab) => {
-                if (currentUser.permissions.includes('all')) return true;
-                return currentUser.permissions.includes(tab);
-            };
-            
             // Get all tab elements
             const tabs = document.querySelectorAll('.tab');
             
@@ -2386,73 +2558,91 @@
             
             tabs.forEach((tab, index) => {
                 const tabName = tabNames[index];
-                if (hasPermission(tabName)) {
+                
+                // Admin and Manager can see all tabs
+                if (isAdminOrManager()) {
                     tab.style.display = 'inline-block';
+                } 
+                // Engineer can only see: dashboard, fleet, planning, forecasting
+                else if (isEngineer()) {
+                    const engineerTabs = ['dashboard', 'fleet', 'planning', 'forecasting'];
+                    tab.style.display = engineerTabs.includes(tabName) ? 'inline-block' : 'none';
                 } else {
                     tab.style.display = 'none';
                 }
             });
             
-            // Hide buttons for engineers (only managers/admins can modify data and export)
-            const canModify = currentUser.permissions.includes('all') || currentUser.permissions.includes('costs');
+            // Hide/show action buttons based on role
+            const canModify = isAdminOrManager();
             
-            // Hide Add Spare Record button
+            // Hide Add Spare Record button for engineers
             const addSpareBtn = document.getElementById('addSpareBtn');
             if (addSpareBtn) {
                 addSpareBtn.style.display = canModify ? 'inline-block' : 'none';
             }
             
-            // Hide Register Engine button
+            // Engineers CAN register engines
             const registerEngineBtn = document.getElementById('registerEngineBtn');
             if (registerEngineBtn) {
-                registerEngineBtn.style.display = canModify ? 'inline-block' : 'none';
+                registerEngineBtn.style.display = 'inline-block'; // All roles can register
             }
             
-            // Hide Export Excel button
+            // Hide Export/Import Excel buttons for engineers
             const exportExcelBtn = document.getElementById('exportExcelBtn');
             if (exportExcelBtn) {
                 exportExcelBtn.style.display = canModify ? 'inline-block' : 'none';
             }
             
-            // Hide Import Excel button
             const importExcelBtn = document.getElementById('importExcelBtn');
             if (importExcelBtn) {
                 importExcelBtn.style.display = canModify ? 'inline-block' : 'none';
             }
             
-            // Hide Download Template button
             const downloadTemplateBtn = document.getElementById('downloadTemplateBtn');
             if (downloadTemplateBtn) {
                 downloadTemplateBtn.style.display = canModify ? 'inline-block' : 'none';
             }
         }
 
-        function logout() {
-            console.log('Logout button clicked');
+        async function logout(autoLogout = false) {
+            const confirmed = autoLogout || confirm('Are you sure you want to logout?');
             
-            if (confirm('Are you sure you want to logout?')) {
-                console.log('User confirmed logout');
-                
-                // Clear session
-                sessionStorage.removeItem('loggedInUser');
-                currentUser = null;
-                
-                // Clear data
-                engines = [];
-                spares = [];
-                lubeCosts = [];
-                
-                // Reset login form
-                document.getElementById('loginForm').reset();
-                document.getElementById('loginUsername').value = '';
-                document.getElementById('loginPassword').value = '';
-                
-                // Show login page
-                showLoginPage();
-                
-                console.log('Logout complete');
-            } else {
-                console.log('User cancelled logout');
+            if (confirmed) {
+                try {
+                    // Log the logout
+                    logAuditEvent('USER_LOGOUT', { auto: autoLogout });
+                    
+                    // Clear session timeouts
+                    if (sessionTimeout) clearTimeout(sessionTimeout);
+                    if (sessionWarningTimeout) clearTimeout(sessionWarningTimeout);
+                    
+                    // Sign out from Firebase
+                    await auth.signOut();
+                    
+                    // Clear local state
+                    currentUser = null;
+                    userRole = null;
+                    userEmail = null;
+                    userName = null;
+                    userUID = null;
+                    
+                    // Clear data
+                    engines = [];
+                    spares = [];
+                    lubeCosts = [];
+                    
+                    // Reset login form
+                    document.getElementById('loginForm').reset();
+                    
+                    // Show login page
+                    showLoginPage();
+                    
+                    console.log('✅ Logout complete');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    // Show login page anyway
+                    showLoginPage();
+                }
             }
         }
 
@@ -2674,7 +2864,7 @@
             
             // Show only engines with service due soon
             const tbody = document.getElementById('enginesTable');
-            const canModify = currentUser && (currentUser.permissions.includes('all') || currentUser.permissions.includes('costs'));
+            const canModify = isAdminOrManager();
             const serviceDueEngines = engines.filter(e => {
                 const hoursSinceService = e.operatingHours - e.lastServiceHours;
                 const hoursUntilService = e.oilInterval - hoursSinceService;
@@ -2838,6 +3028,7 @@
                     return;
                 }
                 engines.push(engineData);
+                logAuditEvent('ENGINE_REGISTERED', { engineId: engineId, manufacturer: manufacturer, model: model });
                 console.log('Added new engine. Total engines:', engines.length);
                 alert('✅ Engine ' + engineId + ' registered successfully!');
             }
@@ -3145,7 +3336,7 @@
                 return;
             }
             
-            const canModify = currentUser && (currentUser.permissions.includes('all') || currentUser.permissions.includes('costs'));
+            const canModify = isAdminOrManager();
             
             tbody.innerHTML = engines.map(e => {
                 const hoursSinceService = e.operatingHours - e.lastServiceHours;
@@ -3186,7 +3377,7 @@
                 engines.map(e => `<option value="${e.id}">${e.id} - ${e.model}</option>`).join('');
             
             // Hide cost columns for engineers
-            const canSeeCosts = currentUser && (currentUser.permissions.includes('all') || currentUser.permissions.includes('costs'));
+            const canSeeCosts = isAdminOrManager();
             const costColumns = document.querySelectorAll('.cost-column');
             costColumns.forEach(col => {
                 col.style.display = canSeeCosts ? '' : 'none';
@@ -3268,7 +3459,7 @@
             const engine = engines.find(e => e.id === engineId);
             if (!engine) return;
             
-            const canSeeCosts = currentUser && (currentUser.permissions.includes('all') || currentUser.permissions.includes('costs'));
+            const canSeeCosts = isAdminOrManager();
             
             const engineSpares = spares.filter(s => s.engineId === engineId);
             const totalSparesCost = engineSpares.length > 0 ? engineSpares.reduce((sum, s) => sum + s.totalCost, 0) : 0;
@@ -3680,7 +3871,7 @@
             const endDate = new Date(today);
             endDate.setDate(endDate.getDate() + period);
             
-            const canSeeCosts = currentUser && (currentUser.permissions.includes('all') || currentUser.permissions.includes('costs'));
+            const canSeeCosts = isAdminOrManager();
             
             // Helper function to determine service type based on hours
             function determineServiceType(serviceHours) {
@@ -3932,7 +4123,7 @@
             });
             
             const tbody = document.getElementById('enginesTable');
-            const canModify = currentUser && (currentUser.permissions.includes('all') || currentUser.permissions.includes('costs'));
+            const canModify = isAdminOrManager();
             
             tbody.innerHTML = filtered.map(e => {
                 const hoursSinceService = e.operatingHours - e.lastServiceHours;
